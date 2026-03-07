@@ -1,9 +1,12 @@
+// Подключаем библиотеку ввода-вывода
 #include <iostream>
-using namespace std;
 
 int main() {
-	string name;
-	cin >> name;
-	cout << "Hello world from " << name << endl;
+	// Создаем строку для имени
+	std::string name;
+	// Принимаем имя
+	std::cin >> name;
+	// Печатаем
+	std::cout << "Hello world from " << name << std::endl;
 	return 0;
 }

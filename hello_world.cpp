@@ -1,12 +1,12 @@
-// Подключаем библиотеку ввода-вывода
+// including standard IO library
 #include <iostream>
 
 int main() {
-	// Создаем строку для имени
+	// creating string for name
 	std::string name;
-	// Принимаем имя
+	// recieving name
 	std::cin >> name;
-	// Печатаем
+	// printing "hello world from name"
 	std::cout << "Hello world from " << name << std::endl;
 	return 0;
 }

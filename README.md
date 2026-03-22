@@ -282,3 +282,450 @@ To https://github.com/satodim/lab03.git
 *Вам поручили перейти на систему автоматизированной сборки CMake. Исходные файлы находятся в директории formatter_lib. В этой директории находятся файлы для статической библиотеки formatter. Создайте CMakeList.txt в директории formatter_lib, с помощью которого можно будет собирать статическую библиотеку formatter.*
 
 ### Выполнение
+#### *Для начала нужно создать необходимые репозитории для работы*
+``` sh
+$ mkdir formatter_lib
+$ mkdir formatter_ex_lib
+$ mkdir hello_world
+$ mkdir solver
+$ mkdir solver/solver_lib
+```
+#### *Перейдем в первый репозиторий и заполним файлы*
+1) *CMakeLists.txt*
+```sh
+cat > CMakeLists.txt << 'EOF'
+cmake_minimum_required(VERSION 3.4)
+project(formatter)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_library(formatter STATIC formatter.cpp)
+EOF
+```
+2) *formatter.h*
+```sh
+cat > formatter.h << 'EOF'
+#pragma once
+
+#include <string>
+
+std::string formatter(const std::string& message);
+EOF
+```
+3) *formatter.cpp*
+```sh
+cat > formatter.cpp << 'EOF'
+#include "formatter.h"
+
+std::string formatter(const std::string& message)
+{
+    std::string res;
+    res += "-------------------------\n";
+    res += message + "\n";
+    res += "-------------------------\n";
+    return res;
+}
+EOF
+```
+#### Теперь через cmake делаем конфигурацию и сбокру
+```sh
+cmake -H. -B_build
+cmake --build _build
+```
+*Вывод1:*
+```sh
+CMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/vboxuser/satodim/workspace/workspace/projects/lab03/formatter_lib/_build
+```
+*Вывод2:*
+```sh
+[ 50%] Building CXX object CMakeFiles/formatter.dir/formatter.cpp.o
+[100%] Linking CXX static library libformatter.a
+[100%] Built target formatter
+```
+### Задание 2
+*У компании "Formatter Inc." есть перспективная библиотека, которая является расширением предыдущей библиотеки. Т.к. вы уже овладели навыком созданием CMakeList.txt для статической библиотеки formatter, ваш руководитель поручает заняться созданием CMakeList.txt для библиотеки formatter_ex, которая в свою очередь использует библиотеку formatter.*
+
+### Выполнение
+#### Перейдем в вторую библиотеку и заполним там файлы
+1)*CMakeLists.txt*
+```sh
+cat > CMakeLists.txt << 'EOF'
+cmake_minimum_required(VERSION 3.4)
+project(formatter_ex)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_library(formatter_ex STATIC formatter_ex.cpp)
+
+target_include_directories(formatter_ex PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../formatter_lib)
+target_link_libraries(formatter_ex formatter)
+EOF
+```
+2) *formatter_ex.h*
+```sh
+cat > formatter_ex.h << 'EOF'
+#pragma once
+
+#include <string>
+#include <iostream>
+
+std::ostream& formatter(std::ostream& out, const std::string& message);
+EOF
+```
+3) *formatter_ex.cpp*
+```sh
+cat > formatter_ex.cpp << 'EOF'
+#include "formatter_ex.h"
+
+#include "formatter.h"
+
+std::ostream& formatter(std::ostream& out, const std::string& message)
+{
+    return out << formatter(message);
+}
+EOF
+```
+#### По аналогии с предыдущим заданием сделаем те же действия
+
+```sh
+cmake -H. -B_build
+cmake --build _build
+```
+*Вывод1:*
+```sh
+CMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.6s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/vboxuser/satodim/workspace/workspace/projects/lab03/formatter_ex_lib/_build
+
+```
+*Вывод2:*
+```sh
+[ 50%] Building CXX object CMakeFiles/formatter_ex.dir/formatter_ex.cpp.o
+[100%] Linking CXX static library libformatter_ex.a
+[100%] Built target formatter_ex
+```
+### Задание 3
+*Конечно же ваша компания предоставляет примеры использования своих библиотек. Чтобы продемонстрировать как работать с библиотекой formatter_ex, вам необходимо создать два CMakeList.txt для двух простых приложений:
+
+    hello_world, которое использует библиотеку formatter_ex;
+    solver, приложение которое испольует статические библиотеки formatter_ex и solver_lib.
+*
+### Выполнение 
+
+#### В этот раз переходим в дирректорию hello_world и заполняем уже там файлы
+1) *CMakeLists.txt*
+```sh
+cat > CMakeLists.txt << 'EOF'
+cmake_minimum_required(VERSION 3.10)
+project(hello_world)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/../formatter_lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/../formatter_ex_lib
+)
+
+add_subdirectory(../formatter_lib formatter_lib)
+add_subdirectory(../formatter_ex_lib formatter_ex_lib)
+
+add_executable(hello_world hello_world.cpp)
+target_link_libraries(hello_world formatter_ex)
+EOF
+```
+2)*formatter_ex.h*
+```sh
+cat > formatter_ex.h << 'EOF'
+#pragma once
+
+#include <string>
+#include <iostream>
+
+std::ostream& formatter(std::ostream& out, const std::string& message);
+EOF
+```
+3) *hello_world.cpp*
+```sh
+cat > hello_world.cpp << 'EOF'
+#include <iostream>
+
+#include "formatter_ex.h"
+
+int main()
+{
+    formatter(std::cout, "hello, world!");
+}
+EOF
+```
+####  Аналогично делаем конфигурацию и сборку
+```sh
+cmake -H. -B_build
+cmake --build _build
+```
+*Вывод1:*
+```sh
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Deprecation Warning at /home/vboxuser/satodim/workspace/workspace/projects/lab03/formatter_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at /home/vboxuser/satodim/workspace/workspace/projects/lab03/formatter_ex_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/vboxuser/satodim/workspace/workspace/projects/lab03/hello_world/_build
+
+
+```
+*Вывод2:*
+```sh
+[ 16%] Building CXX object formatter_lib/CMakeFiles/formatter.dir/formatter.cpp.o
+[ 33%] Linking CXX static library libformatter.a
+[ 33%] Built target formatter
+[ 50%] Building CXX object formatter_ex_lib/CMakeFiles/formatter_ex.dir/formatter_ex.cpp.o
+[ 66%] Linking CXX static library libformatter_ex.a
+[ 66%] Built target formatter_ex
+[ 83%] Building CXX object CMakeFiles/hello_world.dir/hello_world.cpp.o
+[100%] Linking CXX executable hello_world
+[100%] Built target hello_world
+```
+#### Проверяем работу программы
+```sh
+_build/hello_world
+```
+*Вывод:*
+```sh
+-------------------------
+hello, world!
+-------------------------
+```
+#### Теперь перейдем в дирректорию solver/solver_lib и заполним файлы уже там
+1) *CMakeLists.txt*
+```sh
+cat > CMakeLists.txt << 'EOF'
+cmake_minimum_required(VERSION 3.10)
+project(solver_lib)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_library(solver_lib STATIC solver.cpp)
+EOF
+```
+2) *solver.h*
+```sh
+cat > solver.h << 'EOF'
+#pragma once
+
+void solve(float a, float b, float c, float& x1, float& x2);
+EOF
+```
+3) *solver.cpp*
+```sh
+cat > solver.cpp << 'EOF'
+#include "solver.h"
+
+#include <stdexcept>
+#include <math.h>
+void solve(float a, float b, float c, float& x1, float& x2)
+{
+    float d = (b * b) - (4 * a * c);
+
+    if (d < 0)
+    {
+        throw std::logic_error{"error: discriminant < 0"};
+    }
+
+    x1 = (-b - std::sqrt(d)) / (2 * a);
+    x2 = (-b + std::sqrt(d)) / (2 * a);
+}
+EOF
+```
+#### Меняем дирректорию на вышестоящую и проворачиваем похожие действия там
+1) *CMakeLists.txt*
+```sh 
+cat > CMakeLists.txt << 'EOF'
+cmake_minimum_required(VERSION 3.10)
+project(solver)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/solver_lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/../formatter_lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/../formatter_ex_lib
+)
+
+add_subdirectory(solver_lib)
+add_subdirectory(../formatter_lib formatter_lib)
+add_subdirectory(../formatter_ex_lib formatter_ex_lib)
+
+add_executable(solver equation.cpp)
+target_link_libraries(solver solver_lib formatter formatter_ex)
+EOF
+```
+2) *equation.cpp*
+```sh
+cat > equation.cpp << 'EOF'
+#include <iostream>
+
+#include "formatter_ex.h"
+#include "solver.h"
+
+int main()
+{
+    float a = 0;
+    float b = 0;
+    float c = 0;
+
+    std::cin >> a >> b >> c;
+
+    float x1 = 0;
+    float x2 = 0;
+
+    try
+    {
+        solve(a, b, c, x1, x2);
+
+        formatter(std::cout, "x1 = " + std::to_string(x1));
+        formatter(std::cout, "x2 = " + std::to_string(x2));
+EOF return 0;tter(std::cout, ex.what());
+```
+#### Делаем кнфигурацию и сборку
+
+```sh
+cmake -H. -B_build
+cmake --build _build
+```
+*Вывод1:*
+```sh
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Deprecation Warning at /home/vboxuser/satodim/workspace/workspace/projects/lab03/formatter_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at /home/vboxuser/satodim/workspace/workspace/projects/lab03/formatter_ex_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/vboxuser/satodim/workspace/workspace/projects/lab03/solver/_build
+
+```
+*Вывод2:*
+```sh
+[ 12%] Building CXX object formatter_lib/CMakeFiles/formatter.dir/formatter.cpp.o
+[ 25%] Linking CXX static library libformatter.a
+[ 25%] Built target formatter
+[ 37%] Building CXX object formatter_ex_lib/CMakeFiles/formatter_ex.dir/formatter_ex.cpp.o
+[ 50%] Linking CXX static library libformatter_ex.a
+[ 50%] Built target formatter_ex
+[ 62%] Building CXX object solver_lib/CMakeFiles/solver_lib.dir/solver.cpp.o
+[ 75%] Linking CXX static library libsolver_lib.a
+[ 75%] Built target solver_lib
+[ 87%] Building CXX object CMakeFiles/solver.dir/equation.cpp.o
+[100%] Linking CXX executable solver
+[100%] Built target solver
+```
+#### Проверяем работу, введа значения 1 17 9
+```sh
+_build/solver
+```
+*Вывод:*
+```sh
+-------------------------
+x1 = -16.452988
+-------------------------
+-------------------------
+x2 = -0.547013
+-------------------------
+```
+
+
+

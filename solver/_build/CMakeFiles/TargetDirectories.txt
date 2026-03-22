@@ -1,0 +1,12 @@
+/home/vboxuser/satodim/workspace/workspace/projects/lab03/solver/_build/CMakeFiles/solver.dir
+/home/vboxuser/satodim/workspace/workspace/projects/lab03/solver/_build/CMakeFiles/edit_cache.dir
+/home/vboxuser/satodim/workspace/workspace/projects/lab03/solver/_build/CMakeFiles/rebuild_cache.dir
+/home/vboxuser/satodim/workspace/workspace/projects/lab03/solver/_build/solver_lib/CMakeFiles/solver_lib.dir
+/home/vboxuser/satodim/workspace/workspace/projects/lab03/solver/_build/solver_lib/CMakeFiles/edit_cache.dir
+/home/vboxuser/satodim/workspace/workspace/projects/lab03/solver/_build/solver_lib/CMakeFiles/rebuild_cache.dir
+/home/vboxuser/satodim/workspace/workspace/projects/lab03/solver/_build/formatter_lib/CMakeFiles/formatter.dir
+/home/vboxuser/satodim/workspace/workspace/projects/lab03/solver/_build/formatter_lib/CMakeFiles/edit_cache.dir
+/home/vboxuser/satodim/workspace/workspace/projects/lab03/solver/_build/formatter_lib/CMakeFiles/rebuild_cache.dir
+/home/vboxuser/satodim/workspace/workspace/projects/lab03/solver/_build/formatter_ex_lib/CMakeFiles/formatter_ex.dir
+/home/vboxuser/satodim/workspace/workspace/projects/lab03/solver/_build/formatter_ex_lib/CMakeFiles/edit_cache.dir
+/home/vboxuser/satodim/workspace/workspace/projects/lab03/solver/_build/formatter_ex_lib/CMakeFiles/rebuild_cache.dir
